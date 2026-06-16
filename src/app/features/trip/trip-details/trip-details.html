@@ -1,0 +1,148 @@
+<div class="container mt-4" *ngIf="trip">
+  <button mat-button color="primary" (click)="back()">
+    ← Back
+  </button>
+
+  <mat-card class="mt-3">
+    <mat-card-header>
+      <mat-card-title>{{ trip.title }}</mat-card-title>
+      <mat-card-subtitle>{{ trip.currency }}</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <p>{{ trip.description }}</p>
+      <p class="text-muted">
+        {{ trip.startDate }} - {{ trip.endDate }}
+      </p>
+    </mat-card-content>
+  </mat-card>
+
+  <hr>
+  <mat-card-content>
+    <h3>Members</h3>
+
+    <form [formGroup]="memberForm"
+          (ngSubmit)="addMember()"
+          class="d-flex gap-2 align-items-center mb-3">
+      <mat-form-field appearance="outline" class="flex-grow-1">
+        <mat-label>User ID</mat-label>
+        <label>
+          <input matInput type="number" formControlName="userId">
+        </label>
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" type="submit">
+        Add
+      </button>
+    </form>
+
+    <div *ngIf="members.length === 0" class="text-muted">
+      No members yet.
+    </div>
+
+    <div *ngFor="let member of members" class="d-flex justify-content-between align-items-center border-bottom py-2">
+      <div>
+        <strong>{{ member.firstName }} {{ member.lastName }}</strong>
+        <div class="text-muted">{{ member.email }}</div>
+      </div>
+
+      <button mat-button color="warn" (click)="removeMember(member.userId)">
+        Remove
+      </button>
+    </div>
+  </mat-card-content>
+
+  <hr>
+
+  <mat-card-content>
+    <h3>Expenses</h3>
+
+    <form [formGroup]="expenseForm" (ngSubmit)="createExpense()">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Title</mat-label>
+        <label>
+          <input matInput formControlName="title">
+        </label>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Description</mat-label>
+        <label>
+          <input matInput formControlName="description">
+        </label>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Amount</mat-label>
+        <label>
+          <input matInput type="number" formControlName="amount">
+        </label>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Category</mat-label>
+        <label>
+          <input matInput formControlName="category">
+        </label>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Expense Date</mat-label>
+        <label>
+          <input matInput type="date" formControlName="expenseDate">
+        </label>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Paid By User ID</mat-label>
+        <label>
+          <input matInput type="number" formControlName="paidByUserId">
+        </label>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Participant IDs comma separated</mat-label>
+        <label>
+          <input matInput formControlName="participantIds">
+        </label>
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" type="submit">
+        Add Expense
+      </button>
+    </form>
+
+    <div *ngFor="let expense of expenses" class="d-flex justify-content-between border-bottom py-2 mt-2">
+      <div>
+        <strong>{{ expense.title }}</strong>
+        <div>{{ expense.description }}</div>
+        <div class="text-muted">
+          {{ expense.amount }} {{ trip.currency }} - {{ expense.category }}
+        </div>
+      </div>
+
+      <button mat-button color="warn" (click)="deleteExpense(expense.id)">
+        Delete
+      </button>
+    </div>
+  </mat-card-content>
+
+  <hr>
+
+  <mat-card-content>
+    <h3>Balances</h3>
+
+    <div *ngIf="balances.length === 0" class="text-muted">
+      No balances yet.
+    </div>
+
+    <div *ngFor="let balance of balances" class="border-bottom py-2">
+      <strong>{{ balance.debtorName }}</strong>
+      owes
+      <strong>{{ balance.creditorName }}</strong>
+      {{ balance.amount }} {{ trip.currency }}
+    </div>
+  </mat-card-content>
+
+
+</div>

@@ -1,0 +1,97 @@
+<div class="container mt-4">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="mb-0">My Trips</h1>
+      <p class="text-muted mb-0">Manage your travel expenses</p>
+    </div>
+
+    <div>
+      <button mat-button color="warn" (click)="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="mb-4">
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="showCreateForm = !showCreateForm">
+      + Create Trip
+    </button>
+  </div>
+
+  <mat-card class="mb-4" *ngIf="showCreateForm">
+    <mat-card-header>
+      <mat-card-title>Create Trip</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="tripForm" (ngSubmit)="createTrip()">
+
+        <mat-form-field appearance="outline" class="w-100 mt-3">
+          <mat-label>Title</mat-label>
+          <input matInput formControlName="title">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Description</mat-label>
+          <input matInput formControlName="description">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Currency</mat-label>
+          <input matInput formControlName="currency">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Start date</mat-label>
+          <input matInput type="date" formControlName="startDate">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>End date</mat-label>
+          <input matInput type="date" formControlName="endDate">
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="submit">
+          Save Trip
+        </button>
+
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="row">
+    <div class="col-md-4 mb-3" *ngFor="let trip of trips">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>{{ trip.title }}</mat-card-title>
+          <mat-card-subtitle>{{ trip.currency }}</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+          <p>{{ trip.description }}</p>
+          <p class="text-muted">
+            {{ trip.startDate }} - {{ trip.endDate }}
+          </p>
+        </mat-card-content>
+
+        <mat-card-actions>
+          <button mat-button color="primary" (click)="openTrip(trip.id)">
+            Open
+          </button>
+
+          <button mat-button color="warn" (click)="deleteTrip(trip.id)">
+            Delete
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+
+  <div *ngIf="trips.length === 0" class="text-center text-muted mt-5">
+    <h3>No trips yet</h3>
+    <p>Create your first trip to start splitting expenses.</p>
+  </div>
+
+</div>
