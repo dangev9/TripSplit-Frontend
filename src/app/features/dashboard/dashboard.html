@@ -11,6 +11,18 @@
     </div>
   </div>
 
+  <div *ngIf="loading" class="alert alert-info">
+    Loading trips...
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="successMessage" class="alert alert-success">
+    {{ successMessage }}
+  </div>
+
   <div class="mb-4">
     <button
       mat-raised-button
@@ -20,7 +32,7 @@
     </button>
   </div>
 
-  <mat-card class="mb-4" *ngIf="showCreateForm">
+  <mat-card class="mb-4 trip-card" *ngIf="showCreateForm">
     <mat-card-header>
       <mat-card-title>Create Trip</mat-card-title>
     </mat-card-header>
@@ -63,7 +75,7 @@
 
   <div class="row">
     <div class="col-md-4 mb-3" *ngFor="let trip of trips">
-      <mat-card>
+      <mat-card class="trip-card">
         <mat-card-header>
           <mat-card-title>{{ trip.title }}</mat-card-title>
           <mat-card-subtitle>{{ trip.currency }}</mat-card-subtitle>
@@ -89,7 +101,7 @@
     </div>
   </div>
 
-  <div *ngIf="trips.length === 0" class="text-center text-muted mt-5">
+  <div *ngIf="!loading && trips.length === 0" class="text-center text-muted mt-5">
     <h3>No trips yet</h3>
     <p>Create your first trip to start splitting expenses.</p>
   </div>

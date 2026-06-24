@@ -26,6 +26,9 @@ export class Dashboard implements OnInit {
   trips: Trip[] = [];
   tripForm!: FormGroup;
   showCreateForm =  false;
+  loading = false;
+  errorMessage = '';
+  successMessage = '';
 
   constructor(private fb: FormBuilder,
               private tripService: TripService,
@@ -35,28 +38,42 @@ export class Dashboard implements OnInit {
   }
 
   loadTrips(): void {
+    this.loading = true;
+    this.errorMessage = '';
+
     this.tripService.getMyTrips().subscribe({
       next: (trips) => {
           this.trips = trips;
-          this.cdr.detectChanges();
+          this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (error) => {
-        console.error('Failed to load trips', error);
+        this.errorMessage = 'Failed to load trips.';
+        this.loading = false;
       }
     });
   }
 
   createTrip(): void {
+    if (this.tripForm.invalid || !this.tripForm.value.title) {
+      this.errorMessage = 'Please enter a trip title.';
+      return;
+    }
+
+    this.errorMessage = '';
+    this.successMessage = '';
+
     this.tripService.createTrip(this.tripForm.value).subscribe({
       next: () => {
         this.tripForm.reset({
           currency: 'EUR'
         });
         this.showCreateForm = false;
+        this.successMessage = 'Trip created successfully.';
         this.loadTrips();
       },
       error: (error) => {
-        console.error('Failed to create trip', error);
+        this.errorMessage = 'Failed to create trip.';
       }
     });
   }
@@ -69,12 +86,17 @@ export class Dashboard implements OnInit {
   deleteTrip(tripId?: number): void {
     if (!tripId) return;
 
+    if (!confirm('Are you sure you want to delete this trip?')) {
+      return;
+    }
+
     this.tripService.deleteTrip(tripId).subscribe({
       next: () => {
         this.loadTrips();
+        this.successMessage = 'Trip deleted successfully.';
       },
       error: (error) => {
-        console.error('Failed to delete trip', error);
+        this.errorMessage = 'Failed to delete trip.';
       }
     });
   }

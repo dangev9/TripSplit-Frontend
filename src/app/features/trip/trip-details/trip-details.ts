@@ -33,6 +33,9 @@ export class TripDetails implements OnInit {
   balances: Balance[] = [];
   memberForm!: FormGroup;
   expenseForm!: FormGroup;
+  loading = false;
+  errorMessage = '';
+  successMessage = '';
 
   constructor(private route: ActivatedRoute,
               private router: Router,
@@ -55,15 +58,19 @@ export class TripDetails implements OnInit {
   }
 
   loadTrip() {
+    this.loading = true;
+    this.errorMessage = '';
+
     this.tripService.getTrip(this.tripId).subscribe({
       next: (trip) => {
         this.trip = trip;
+        this.loading = false;
         this.cdr.detectChanges();
 
       },
       error: (error) => {
-        console.error('Failed to load trip', error);
-      }
+        this.errorMessage = 'Failed to load trip or you do not have access.';
+        this.loading = false;      }
     })
   }
 
@@ -105,7 +112,7 @@ export class TripDetails implements OnInit {
         this.members = members;
         this.cdr.detectChanges();
       },
-      error: (error) => console.error('Failed to load members', error)
+      error: (error) => this.errorMessage = 'Failed to load members.'
     });
   }
 
@@ -122,34 +129,48 @@ export class TripDetails implements OnInit {
   addMember(): void {
     const userId = Number(this.memberForm.value.userId);
 
-    if (!userId) return;
+    if (!userId) {
+      this.errorMessage = 'Please enter a valid user ID.';
+      return;
+    }
 
     this.memberService.addMember(this.tripId, userId).subscribe({
       next: () => {
+        this.successMessage = 'Member added successfully.';
         this.memberForm.reset();
         this.loadMembers();
         this.cdr.detectChanges();
       },
       error: (error) => {
-        console.error('Failed to add member', error);
+        this.errorMessage = 'Failed to add member.'
       }
     });
   }
 
   removeMember(userId: number): void {
+    if (!confirm('Remove this member from the trip?')) {
+      return;
+    }
+
     this.memberService.removeMember(this.tripId, userId).subscribe({
       next: () => {
         this.loadMembers();
+        this.successMessage = 'Member removed successfully.';
         this.cdr.detectChanges();
       },
       error: (error) => {
-        console.error('Failed to remove member', error);
+        this.errorMessage = 'Failed to remove member.';
       }
     });
   }
 
   createExpense(): void {
     const formValue = this.expenseForm.value;
+
+    if (!formValue.title || !formValue.amount || !formValue.paidByUserId || !formValue.participantIds) {
+      this.errorMessage = 'Please fill in all required expense fields.';
+      return;
+    }
 
     const expense = {
       ...formValue,
@@ -162,20 +183,30 @@ export class TripDetails implements OnInit {
 
     this.expenseService.createExpense(this.tripId, expense).subscribe({
       next: () => {
+        this.successMessage = 'Expense added successfully.';
         this.expenseForm.reset({ category: 'FOOD' });
         this.loadExpenses();
         this.cdr.detectChanges();
       },
-      error: (error) => console.error('Failed to create expense', error)
+      error: (error) => this.errorMessage = 'Failed to add member.'
     });
   }
 
   deleteExpense(expenseId?: number): void {
     if (!expenseId) return;
 
+    if (!confirm('Delete this expense?')) {
+      return;
+    }
+
     this.expenseService.deleteExpense(expenseId).subscribe({
-      next: () => {this.loadExpenses(); this.cdr.detectChanges();},
-      error: (error) => console.error('Failed to delete expense', error)
+      next: () => {
+        this.loadExpenses();
+        this.successMessage = 'Expense deleted successfully.';
+        this.cdr.detectChanges();
+        },
+      error: (error) =>
+        this.errorMessage = 'Failed to delete expense.'
     });
   }
 

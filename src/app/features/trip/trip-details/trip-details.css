@@ -1,0 +1,15 @@
+mat-card {
+  border-radius: 12px;
+}
+
+mat-card:not(:first-child) {
+  margin-top: 16px;
+}
+
+.section-card {
+  border-radius: 12px;
+}
+
+.section-card:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
