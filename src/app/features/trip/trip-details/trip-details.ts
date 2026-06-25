@@ -36,6 +36,8 @@ export class TripDetails implements OnInit {
   loading = false;
   errorMessage = '';
   successMessage = '';
+  aiSummary = '';
+  loadingAi = false;
 
   constructor(private route: ActivatedRoute,
               private router: Router,
@@ -208,6 +210,23 @@ export class TripDetails implements OnInit {
       error: (error) =>
         this.errorMessage = 'Failed to delete expense.'
     });
+  }
+
+  generateAiSummary(): void {
+    this.loadingAi = true;
+
+    this.tripService.getAiSummary(this.tripId).subscribe({
+      next: (response) => {
+        this.aiSummary = response.summary;
+        this.loadingAi = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.errorMessage = 'Error while getting the summary for the trip.';
+        this.loadingAi = false;
+      }
+    })
+
   }
 
 

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Trip} from '../models/trip.model';
+import { AiSummary } from "../models/aisummary.model";
 
 @Injectable({
   providedIn: 'root',
@@ -30,5 +31,9 @@ export class TripService {
 
   deleteTrip(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  getAiSummary(tripId: number): Observable<AiSummary> {
+    return this.http.get<AiSummary>(`${this.apiUrl}/${tripId}/ai-summary`);
   }
 }
